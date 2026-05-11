@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAN Z 2026 — সংগঠন ড্যাশবোর্ড</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Exo+2:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0f1a;--bg2:#0e1525;--sf:#131d2e;--sf2:#1a2640;--sf3:#202f4a;--tx:#e8f0fc;--tx2:#7a96b8;--tx3:#4a6080;--ac:#00d4ff;--ac2:#0099cc;--acg:rgba(0,212,255,.15);--gr:#00e676;--grb:rgba(0,230,118,.1);--rd:#ff5252;--rdb:rgba(255,82,82,.1);--gd:#ffd740;--gdb:rgba(255,215,64,.1);--pu:#b388ff;--pub:rgba(179,136,255,.1);--br:rgba(255,255,255,.07);--br2:rgba(0,212,255,.2);--r:14px;--sw:270px;--sh:0 4px 24px rgba(0,0,0,.4);}
+[data-theme="light"]{--bg:#f0f4fc;--bg2:#e8eef8;--sf:#fff;--sf2:#eef2fa;--sf3:#e2eaf6;--tx:#0d1b2e;--tx2:#4a6080;--tx3:#8a9ab8;--ac:#0077cc;--ac2:#005fa3;--acg:rgba(0,119,204,.1);--gr:#00a854;--grb:rgba(0,168,84,.1);--rd:#d32f2f;--rdb:rgba(211,47,47,.1);--gd:#e6a817;--gdb:rgba(230,168,23,.1);--pu:#7c4dff;--pub:rgba(124,77,255,.1);--br:rgba(0,0,0,.08);--br2:rgba(0,119,204,.2);--sh:0 4px 24px rgba(0,0,0,.1);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;transition:background .4s,color .4s;overflow-x:hidden;}
+
+/* LOADER */
+#loader{position:fixed;inset:0;z-index:9999;background:#050a14;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .5s;}
+.ll{font-family:'Exo 2',sans-serif;font-size:50px;font-weight:900;background:linear-gradient(135deg,#00d4ff,#b388ff,#00e676);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(.97)}}
+.ls{color:#4a6080;font-size:13px;letter-spacing:3px;text-transform:uppercase;}
+.lb{width:200px;height:2px;background:#1a2640;border-radius:2px;overflow:hidden;}
+.lbf{height:100%;background:linear-gradient(90deg,#00d4ff,#b388ff);animation:lf 2s ease forwards;}
+@keyframes lf{to{width:100%}}
+
+/* ADMIN LOGIN */
+#aLogin{display:none;position:fixed;inset:0;z-index:8000;background:var(--bg);align-items:center;justify-content:center;}
+#aLogin.show{display:flex;}
+.lb2{background:var(--sf);border:1px solid var(--br2);border-radius:20px;padding:34px 30px;width:90%;max-width:370px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+.llogo{font-family:'Exo 2',sans-serif;font-size:36px;font-weight:900;background:linear-gradient(135deg,#00d4ff,#b388ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;}
+.lsub{font-size:12px;color:var(--tx2);margin-bottom:24px;}
+.li{width:100%;padding:11px 15px;border:1px solid var(--br);border-radius:10px;background:var(--sf2);color:var(--tx);font-size:14px;font-family:'Hind Siliguri',sans-serif;outline:none;margin-bottom:11px;transition:all .2s;}
+.li:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--acg);}
+.lbtn{width:100%;padding:12px;background:linear-gradient(135deg,var(--ac),var(--ac2));border:none;border-radius:10px;color:#000;font-size:14px;font-weight:800;font-family:'Hind Siliguri',sans-serif;cursor:pointer;margin-bottom:10px;}
+.lvbtn{width:100%;padding:10px;background:transparent;border:1px solid var(--br);border-radius:10px;color:var(--tx2);font-size:13px;font-weight:600;font-family:'Hind Siliguri',sans-serif;cursor:pointer;transition:all .2s;}
+.lvbtn:hover{border-color:var(--ac);color:var(--ac);}
+.lerr{color:var(--rd);font-size:12px;margin-top:6px;display:none;}
+.hint{font-size:11px;color:var(--tx3);margin-top:10px;}
+
+/* OVERLAY */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:400;backdrop-filter:blur(3px);}
+.ov.open{display:block;}
+
+/* SIDEBAR */
+.sb{position:fixed;top:0;left:calc(-1 * var(--sw));width:var(--sw);height:100vh;background:var(--bg2);border-right:1px solid var(--br);z-index:500;transition:left .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow-y:auto;}
+.sb.open{left:0;}
+.sbb{padding:24px 18px 20px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:13px;}
+.sbi{width:46px;height:46px;background:linear-gradient(135deg,#00d4ff22,#b388ff22);border:1px solid var(--br2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Exo 2',sans-serif;font-size:17px;font-weight:900;color:var(--ac);}
+.sbt h3{font-family:'Exo 2',sans-serif;font-size:15px;font-weight:900;color:var(--tx);}
+.sbt span{font-size:10px;color:var(--tx2);}
+.atag{font-size:9px;background:var(--gdb);color:var(--gd);border-radius:99px;padding:2px 7px;font-weight:700;margin-top:3px;display:none;}
+.snav{flex:1;padding:11px 9px;}
+.ngl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--tx3);padding:10px 12px 5px;}
+.ni{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13px;color:var(--tx2);font-weight:500;transition:all .2s;margin-bottom:2px;}
+.ni:hover,.ni.active{background:var(--acg);color:var(--ac);}
+.ni .ic{font-size:15px;width:18px;text-align:center;}
+.sbot{padding:13px;border-top:1px solid var(--br);}
+.thl{font-size:10px;font-weight:600;color:var(--tx2);margin-bottom:8px;}
+.thbs{display:flex;gap:5px;}
+.thb{flex:1;padding:7px 3px;border:1px solid var(--br);border-radius:8px;background:transparent;cursor:pointer;font-size:10px;color:var(--tx2);font-family:'Hind Siliguri',sans-serif;font-weight:600;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.thb:hover,.thb.active{border-color:var(--ac);background:var(--acg);color:var(--ac);}
+.logoutbtn{width:100%;margin-top:9px;padding:9px;border:1px solid var(--rdb);background:transparent;border-radius:9px;color:var(--rd);font-size:12px;font-weight:700;font-family:'Hind Siliguri',sans-serif;cursor:pointer;transition:all .2s;}
+.logoutbtn:hover{background:var(--rdb);}
+
+/* TOPBAR */
+.tb{position:sticky;top:0;z-index:300;background:var(--bg2);border-bottom:1px solid var(--br);padding:0 13px;height:56px;display:flex;align-items:center;gap:10px;box-shadow:var(--sh);}
+.hb{width:36px;height:36px;border:none;background:var(--sf2);border-radius:9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all .2s;flex-shrink:0;}
+.hb:hover{background:var(--acg);}
+.hb span{display:block;width:17px;height:2px;background:var(--tx);border-radius:2px;}
+.tbr{font-family:'Exo 2',sans-serif;font-size:16px;font-weight:900;color:var(--ac);flex-shrink:0;}
+.sw{flex:1;max-width:350px;position:relative;}
+.sw input{width:100%;padding:8px 12px 8px 35px;border:1px solid var(--br);border-radius:9px;background:var(--sf);color:var(--tx);font-size:13px;font-family:'Hind Siliguri',sans-serif;outline:none;transition:all .2s;}
+.sw input:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--acg);}
+.sw .si{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--tx3);}
+.tbright{margin-left:auto;display:flex;gap:7px;align-items:center;}
+.ibtn{width:34px;height:34px;border:none;background:var(--sf2);border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s;color:var(--tx);}
+.ibtn:hover{background:var(--acg);color:var(--ac);}
+.langb{padding:5px 11px;border:1px solid var(--br);border-radius:8px;background:var(--sf);color:var(--tx2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Hind Siliguri',sans-serif;transition:all .2s;}
+.langb:hover{border-color:var(--ac);color:var(--ac);}
+.abadge{font-size:10px;font-weight:700;background:var(--gdb);color:var(--gd);padding:3px 9px;border-radius:99px;display:none;}
+
+/* NOTICE */
+.nb{background:var(--sf);border-bottom:1px solid var(--br);padding:7px 13px;display:flex;align-items:center;gap:9px;overflow:hidden;}
+.nl{background:var(--gdb);color:var(--gd);font-size:9px;font-weight:700;padding:3px 7px;border-radius:5px;white-space:nowrap;letter-spacing:1px;}
+.nsc{overflow:hidden;flex:1;}
+.nst{white-space:nowrap;font-size:12px;color:var(--tx2);animation:scroll 30s linear infinite;display:inline-block;}
+@keyframes scroll{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
+
+/* MAIN */
+.main{padding:17px 13px;max-width:1100px;margin:0 auto;}
+.sp{display:none;}.sp.active{display:block;}
+
+/* PAGE HEADER */
+.ph{margin-bottom:20px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:11px;}
+.ph h1{font-family:'Exo 2',sans-serif;font-size:22px;font-weight:900;color:var(--tx);letter-spacing:-1px;}
+.ph p{font-size:12px;color:var(--tx2);margin-top:3px;}
+.bpri{display:flex;align-items:center;gap:6px;padding:9px 17px;border:none;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#000;border-radius:9px;font-size:13px;font-weight:700;font-family:'Hind Siliguri',sans-serif;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(0,212,255,.25);}
+.bpri:hover{transform:translateY(-1px);}
+.bsm{padding:7px 13px;border:1px solid var(--br);background:transparent;border-radius:8px;font-size:12px;color:var(--tx2);font-family:'Hind Siliguri',sans-serif;cursor:pointer;transition:all .2s;font-weight:600;}
+.bsm:hover{border-color:var(--ac);color:var(--ac);}
+
+/* STATS */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:11px;margin-bottom:24px;}
+.sc{background:var(--sf);border-radius:var(--r);padding:17px;border:1px solid var(--br);position:relative;overflow:hidden;transition:transform .2s;}
+.sc:hover{transform:translateY(-2px);}
+.sc::after{content:'';position:absolute;top:-10px;right:-10px;width:70px;height:70px;border-radius:50%;filter:blur(20px);opacity:.15;}
+.sc.c1::after{background:#00d4ff;}.sc.c2::after{background:#00e676;}.sc.c3::after{background:#ff5252;}.sc.c4::after{background:#ffd740;}
+.stop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11px;}
+.sic{font-size:22px;}
+.sbadge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;}
+.c1 .sbadge{background:var(--acg);color:var(--ac);}.c2 .sbadge{background:var(--grb);color:var(--gr);}.c3 .sbadge{background:var(--rdb);color:var(--rd);}.c4 .sbadge{background:var(--gdb);color:var(--gd);}
+.sv{font-family:'Exo 2',sans-serif;font-size:28px;font-weight:900;line-height:1;}
+.c1 .sv{color:var(--ac);}.c2 .sv{color:var(--gr);}.c3 .sv{color:var(--rd);}.c4 .sv{color:var(--gd);}
+.sl{font-size:11px;color:var(--tx2);margin-top:4px;}
+
+/* SECTION HEAD */
+.seh{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;flex-wrap:wrap;gap:7px;}
+.seh h2{font-family:'Exo 2',sans-serif;font-size:15px;font-weight:800;color:var(--tx);display:flex;align-items:center;gap:7px;}
+.sbg{font-size:10px;background:var(--sf2);color:var(--tx2);border-radius:99px;padding:2px 8px;font-family:'Hind Siliguri',sans-serif;}
+
+/* TOP CONTRIBUTORS */
+.tcg{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px;margin-bottom:24px;}
+.tcc{background:var(--sf);border:1px solid var(--br);border-radius:12px;padding:15px 11px;text-align:center;transition:all .2s;}
+.tcc:hover{transform:translateY(-2px);border-color:var(--gd);}
+.tcr{font-size:20px;margin-bottom:7px;}
+.tca{width:50px;height:50px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-family:'Exo 2',sans-serif;font-size:19px;font-weight:900;color:#000;}
+.tcn{font-size:13px;font-weight:700;color:var(--tx);}
+.tcm{font-size:10px;color:var(--tx2);margin-top:2px;}
+.tcbar{height:3px;background:var(--sf3);border-radius:3px;margin-top:7px;}
+.tcbf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gd),#ff9800);}
+
+/* MEMBERS */
+.mg{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:11px;margin-bottom:26px;}
+.mc{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:17px 12px 14px;text-align:center;position:relative;transition:all .25s;}
+.mc:hover{transform:translateY(-3px);box-shadow:var(--sh);border-color:var(--br2);}
+.mc.hidden{display:none;}
+.mav{width:60px;height:60px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-family:'Exo 2',sans-serif;font-size:22px;font-weight:900;color:#000;position:relative;border:2px solid var(--br);}
+.mst{position:absolute;bottom:1px;right:1px;width:13px;height:13px;border-radius:50%;border:2px solid var(--sf);}
+.sp2{background:var(--gr);}.su{background:var(--rd);}
+.mn{font-size:14px;font-weight:700;color:var(--tx);margin-bottom:4px;}
+.mr{display:inline-block;font-size:9px;font-weight:700;padding:3px 8px;border-radius:99px;margin-bottom:9px;}
+.rb{background:var(--gdb);color:var(--gd);}.rp{background:var(--pub);color:var(--pu);}.rt{background:var(--grb);color:var(--gr);}.ro{background:var(--acg);color:var(--ac);}.rm{background:var(--sf2);color:var(--tx2);}
+.mi{font-size:11px;color:var(--tx3);margin-bottom:2px;}
+.medb{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:6px;border:none;background:var(--sf2);cursor:pointer;font-size:11px;color:var(--tx2);opacity:0;transition:all .2s;}
+.mc:hover .medb{opacity:1;}
+.medb:hover{background:var(--acg);color:var(--ac);}
+.wadmin{display:none;}.is-admin .wadmin{display:block;}
+.rcb{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;margin-top:7px;padding:6px;background:var(--acg);border:1px solid var(--br2);border-radius:8px;cursor:pointer;font-size:10px;color:var(--ac);font-weight:700;font-family:'Hind Siliguri',sans-serif;transition:all .2s;}
+.rcb:hover{background:rgba(0,212,255,.2);}
+.wab{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;margin-top:5px;padding:5px;background:var(--grb);border:1px solid rgba(0,230,118,.2);border-radius:8px;cursor:pointer;font-size:10px;color:var(--gr);font-weight:700;font-family:'Hind Siliguri',sans-serif;transition:all .2s;}
+.wab:hover{background:rgba(0,230,118,.2);}
+
+/* TABLE */
+.tw{background:var(--sf);border-radius:var(--r);border:1px solid var(--br);overflow:auto;margin-bottom:26px;}
+table{width:100%;border-collapse:collapse;min-width:900px;}
+thead tr{background:var(--sf2);border-bottom:1px solid var(--br);}
+th{padding:10px 9px;font-size:10px;font-weight:700;text-align:center;color:var(--tx2);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;font-family:'Exo 2',sans-serif;}
+th:first-child{text-align:left;}
+td{padding:9px 9px;font-size:12px;border-bottom:1px solid var(--br);text-align:center;}
+td:first-child{text-align:left;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--sf2);}
+.mcel{display:flex;align-items:center;gap:8px;}
+.cav{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Exo 2',sans-serif;font-size:12px;font-weight:900;color:#000;flex-shrink:0;}
+.cnm{font-weight:700;font-size:12px;color:var(--tx);}
+.crl{font-size:9px;color:var(--tx3);}
+.tk{width:28px;height:28px;border-radius:6px;border:none;cursor:pointer;font-size:13px;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;}
+.tk.paid{background:var(--grb);color:var(--gr);}
+.tk.unpaid{background:var(--rdb);color:var(--rd);}
+.tk:hover{transform:scale(1.15);}
+.tk:disabled{cursor:not-allowed;opacity:.4;}
+.ttl{font-weight:800;color:var(--ac);font-family:'Exo 2',sans-serif;font-size:13px;}
+
+/* ABOUT */
+.abh{text-align:center;padding:22px 0 26px;}
+.abl{font-family:'Exo 2',sans-serif;font-size:44px;font-weight:900;background:linear-gradient(135deg,#00d4ff,#b388ff,#00e676);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-2px;}
+.abt{font-size:14px;color:var(--tx2);margin-top:8px;font-style:italic;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.6;}
+.rg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-top:14px;}
+.rc{background:var(--sf2);border:1px solid var(--br);border-radius:10px;padding:13px;display:flex;gap:10px;}
+.rn{width:26px;height:26px;border-radius:7px;background:var(--acg);color:var(--ac);display:flex;align-items:center;justify-content:center;font-family:'Exo 2',sans-serif;font-weight:900;font-size:11px;flex-shrink:0;}
+.rti{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:3px;}
+.rdc{font-size:11px;color:var(--tx2);line-height:1.5;}
+
+/* EXPENSE */
+.es{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:19px;margin-bottom:24px;}
+.ei{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--br);}
+.ei:last-child{border-bottom:none;}
+.eic{font-size:19px;}.einf{flex:1;}
+.en{font-size:13px;font-weight:600;color:var(--tx);}.ed{font-size:10px;color:var(--tx3);}
+.ea{font-family:'Exo 2',sans-serif;font-weight:900;font-size:15px;}
+.et{font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;}
+.et.income{background:var(--grb);color:var(--gr);}.et.expense{background:var(--rdb);color:var(--rd);}
+
+/* CHART */
+.cw{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:19px;margin-bottom:22px;}
+.cbs{display:flex;align-items:flex-end;gap:6px;height:110px;margin-top:13px;border-bottom:1px solid var(--br);padding-bottom:2px;}
+.cbw{flex:1;display:flex;flex-direction:column;align-items:center;}
+.bg{display:flex;gap:2px;align-items:flex-end;height:100%;width:100%;}
+.cb{width:100%;border-radius:4px 4px 0 0;transition:height .6s cubic-bezier(.4,0,.2,1);min-height:4px;}
+.cb.inc{background:linear-gradient(180deg,var(--ac),var(--ac2));}.cb.exb{background:linear-gradient(180deg,var(--rd),#c0392b);}
+.cl{font-size:9px;color:var(--tx3);text-align:center;margin-top:3px;}
+.cleg{display:flex;gap:13px;margin-top:9px;}
+.cli{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--tx2);}
+.cld{width:9px;height:9px;border-radius:3px;}
+
+/* CALENDAR */
+.cals{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:19px;margin-bottom:24px;}
+.calh{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;}
+.calnb{width:32px;height:32px;border:1px solid var(--br);border-radius:8px;background:transparent;cursor:pointer;color:var(--tx);font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.calnb:hover{border-color:var(--ac);color:var(--ac);}
+.calt{font-family:'Exo 2',sans-serif;font-size:16px;font-weight:800;color:var(--tx);}
+.calgr{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.caldl{text-align:center;font-size:9px;font-weight:700;color:var(--tx3);padding:4px 0;text-transform:uppercase;}
+.cald{aspect-ratio:1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--tx2);position:relative;}
+.cald:hover{background:var(--sf2);}
+.cald.today{background:var(--acg);color:var(--ac);font-weight:800;}
+.cald.has-ev::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--gd);}
+.cald.empty{opacity:0;pointer-events:none;}
+.evl{margin-top:14px;}
+.evi{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--br);}
+.evi:last-child{border-bottom:none;}
+.evdb{background:var(--gdb);color:var(--gd);border-radius:8px;padding:6px 9px;text-align:center;font-family:'Exo 2',sans-serif;font-weight:900;font-size:13px;min-width:42px;}
+.evdb span{display:block;font-size:9px;font-weight:600;color:var(--tx3);}
+.evif h4{font-size:13px;font-weight:700;color:var(--tx);}
+.evif p{font-size:11px;color:var(--tx2);}
+
+/* ACTIVITY */
+.acts{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:19px;margin-bottom:24px;}
+.acti{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--br);}
+.acti:last-child{border-bottom:none;}
+.actd{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.actt{font-size:12px;color:var(--tx2);line-height:1.5;}
+.actt strong{color:var(--tx);}
+.actm{font-size:10px;color:var(--tx3);margin-top:2px;}
+
+/* RECEIPT */
+.recbox{background:var(--sf);border:1px solid var(--br);border-radius:16px;width:92%;max-width:350px;padding:26px;font-family:'Hind Siliguri',sans-serif;max-height:90vh;overflow-y:auto;}
+.rech{text-align:center;margin-bottom:18px;padding-bottom:15px;border-bottom:2px dashed var(--br);}
+.recl{font-family:'Exo 2',sans-serif;font-size:26px;font-weight:900;color:var(--ac);}
+.rect{font-size:10px;color:var(--tx2);margin-top:3px;text-transform:uppercase;letter-spacing:2px;}
+.recrow{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--br);}
+.recrow:last-of-type{border-bottom:none;}
+.reclbl{font-size:12px;color:var(--tx2);}
+.recval{font-size:13px;font-weight:700;color:var(--tx);}
+.recamt{text-align:center;margin:14px 0;padding:13px;background:var(--grb);border-radius:10px;}
+.recamt .am{font-family:'Exo 2',sans-serif;font-size:30px;font-weight:900;color:var(--gr);}
+.recamt .lm{font-size:11px;color:var(--tx2);}
+.recft{text-align:center;margin-top:14px;font-size:10px;color:var(--tx3);}
+.recpbtn{width:100%;margin-top:13px;padding:10px;background:linear-gradient(135deg,var(--ac),var(--ac2));border:none;border-radius:9px;color:#000;font-size:13px;font-weight:800;font-family:'Hind Siliguri',sans-serif;cursor:pointer;}
+
+/* MODAL */
+.mb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:700;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.mb.open{display:flex;}
+.md{background:var(--sf);border-radius:18px;width:92%;max-width:420px;padding:23px;box-shadow:0 20px 60px rgba(0,0,0,.5);border:1px solid var(--br);animation:mIn .28s cubic-bezier(.4,0,.2,1);max-height:90vh;overflow-y:auto;}
+@keyframes mIn{from{transform:scale(.9) translateY(30px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.md h3{font-family:'Exo 2',sans-serif;font-size:16px;font-weight:800;color:var(--tx);margin-bottom:16px;display:flex;align-items:center;gap:7px;}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.fg{margin-bottom:12px;}
+.fg label{display:block;font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;}
+.fg input,.fg select{width:100%;padding:9px 12px;border:1px solid var(--br);border-radius:9px;background:var(--sf2);color:var(--tx);font-size:13px;font-family:'Hind Siliguri',sans-serif;outline:none;transition:all .2s;}
+.fg input:focus,.fg select:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--acg);}
+.ma{display:flex;gap:9px;margin-top:15px;}
+.bcan{flex:1;padding:10px;border:1px solid var(--br);background:transparent;border-radius:9px;color:var(--tx2);font-size:13px;font-weight:700;font-family:'Hind Siliguri',sans-serif;cursor:pointer;transition:all .2s;}
+.bcan:hover{border-color:var(--rd);color:var(--rd);}
+.bsav{flex:2;padding:10px;background:linear-gradient(135deg,var(--ac),var(--ac2));border:none;border-radius:9px;color:#000;font-size:13px;font-weight:800;font-family:'Hind Siliguri',sans-serif;cursor:pointer;}
+
+/* TOAST */
+.toast{position:fixed;bottom:25px;right:16px;background:var(--sf);color:var(--tx);border:1px solid var(--br);border-left:3px solid var(--ac);border-radius:12px;padding:11px 15px;font-size:13px;font-weight:500;box-shadow:var(--sh);z-index:9998;transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);max-width:290px;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+@media(max-width:600px){.tbr{font-size:14px;}.main{padding:12px 10px;}.mg{grid-template-columns:repeat(2,1fr);gap:9px;}.sg{grid-template-columns:repeat(2,1fr);}.fr{grid-template-columns:1fr;}.ph{flex-direction:column;}}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="ll">GAN Z</div>
+  <div class="ls">2026 · সংগঠন ড্যাশবোর্ড</div>
+  <div class="lb"><div class="lbf"></div></div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div id="aLogin" class="show">
+  <div class="lb2">
+    <div class="llogo">GAN Z</div>
+    <div style="font-family:'Exo 2',sans-serif;font-size:12px;color:var(--tx2);margin-bottom:4px">2026</div>
+    <div class="lsub">সংগঠন ড্যাশবোর্ড — লগইন করুন</div>
+    <input class="li" type="text" id="lu" placeholder="ব্যবহারকারীর নাম (admin)">
+    <input class="li" type="password" id="lp" placeholder="পাসওয়ার্ড (ganz2026)" onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="lerr" id="lerr">❌ ভুল পাসওয়ার্ড!</div>
+    <button class="lbtn" onclick="doLogin()">🔐 অ্যাডমিন লগইন</button>
+    <button class="lvbtn" onclick="viewOnly()">👁️ শুধু দেখতে চাই (View Only)</button>
+    <div class="hint">💡 অ্যাডমিন: username = admin | pass = ganz2026</div>
+  </div>
+</div>
+
+<div class="ov" id="ov" onclick="closeSB()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sb" id="sb">
+  <div class="sbb">
+    <div class="sbi">GZ</div>
+    <div class="sbt">
+      <h3>GAN Z 2026</h3>
+      <span>সংগঠন ড্যাশবোর্ড</span>
+      <div class="atag" id="atag">🔐 ADMIN MODE</div>
+    </div>
+  </div>
+  <nav class="snav">
+    <div class="ngl">প্রধান</div>
+    <div class="ni active" onclick="showP('home',this)"><span class="ic">🏠</span> হোম</div>
+    <div class="ni" onclick="showP('members',this)"><span class="ic">👥</span> সদস্যবৃন্দ</div>
+    <div class="ni" onclick="showP('dues',this)"><span class="ic">💰</span> চাঁদার হিসাব</div>
+    <div class="ngl">রিপোর্ট</div>
+    <div class="ni" onclick="showP('finance',this)"><span class="ic">📊</span> আর্থিক রিপোর্ট</div>
+    <div class="ni" onclick="showP('attend',this)"><span class="ic">✅</span> উপস্থিতি</div>
+    <div class="ni" onclick="showP('cal',this)"><span class="ic">📅</span> ইভেন্ট ক্যালেন্ডার</div>
+    <div class="ngl">তথ্য</div>
+    <div class="ni" onclick="showP('about',this)"><span class="ic">📖</span> সংগঠন পরিচিতি</div>
+    <div class="ni" onclick="showP('gallery',this)"><span class="ic">🖼️</span> গ্যালারি</div>
+    <div class="ni wadmin" onclick="showP('actlog',this)"><span class="ic">📋</span> অ্যাক্টিভিটি লগ</div>
+  </nav>
+  <div class="sbot">
+    <div class="thl">🎨 থিম</div>
+    <div class="thbs">
+      <button class="thb" id="t-light" onclick="setTh('light')"><span>☀️</span>লাইট</button>
+      <button class="thb active" id="t-dark" onclick="setTh('dark')"><span>🌙</span>ডার্ক</button>
+      <button class="thb" id="t-system" onclick="setTh('system')"><span>💻</span>সিস্টেম</button>
+    </div>
+    <button class="logoutbtn" onclick="doLogout()">🚪 লগআউট</button>
+  </div>
+</aside>
+
+<!-- TOPBAR -->
+<header class="tb">
+  <button class="hb" onclick="toggleSB()"><span></span><span></span><span></span></button>
+  <div class="tbr">GAN Z <span style="color:var(--tx2);font-size:11px;font-weight:400">2026</span></div>
+  <div class="sw"><span class="si">🔍</span><input type="text" placeholder="সদস্য খুঁজুন..." oninput="searchM(this.value)"></div>
+  <div class="tbright">
+    <span class="abadge" id="abadge">🔐 ADMIN</span>
+    <button class="langb" onclick="toggleL()" id="langb">EN</button>
+    <button class="ibtn wadmin" onclick="openAddM()" title="নতুন সদস্য">➕</button>
+    <button class="ibtn" onclick="showT('☁️ ব্যাকআপ সম্পন্ন!')">☁️</button>
+  </div>
+</header>
+
+<!-- NOTICE -->
+<div class="nb">
+  <span class="nl">📢 নোটিশ</span>
+  <div class="nsc"><span class="nst">🎉 আগামী ১৭ তারিখে সংগঠনের বিশেষ পার্টি — সকল সদস্যদের উপস্থিতি বাধ্যতামূলক! &nbsp;&nbsp;&nbsp; 💰 চাঁদা জমার শেষ তারিখ ২৫ তারিখ &nbsp;&nbsp;&nbsp; 🌟 GAN Z 2026 — একতাই শক্তি!</span></div>
+</div>
+
+<main class="main">
+
+<!-- HOME -->
+<div class="sp active" id="p-home">
+  <div class="ph"><div><h1>ড্যাশবোর্ড 👋</h1><p>GAN Z 2026 — সকল তথ্য এক জায়গায়</p></div><button class="bpri wadmin" onclick="openAddM()">➕ নতুন সদস্য</button></div>
+  <div class="sg">
+    <div class="sc c1"><div class="stop"><span class="sic">👥</span><span class="sbadge">সক্রিয়</span></div><div class="sv" id="st">17</div><div class="sl">মোট সদস্য</div></div>
+    <div class="sc c2"><div class="stop"><span class="sic">💰</span><span class="sbadge">সংগৃহীত</span></div><div class="sv" id="sc2">৳0</div><div class="sl">মোট সংগৃহীত</div></div>
+    <div class="sc c3"><div class="stop"><span class="sic">⏳</span><span class="sbadge">বাকি</span></div><div class="sv" id="sd">৳0</div><div class="sl">মোট বাকি</div></div>
+    <div class="sc c4"><div class="stop"><span class="sic">🏦</span><span class="sbadge">ব্যালেন্স</span></div><div class="sv" id="sb2">৳0</div><div class="sl">ফান্ড ব্যালেন্স</div></div>
+  </div>
+  <div class="seh"><h2>🏆 সম্মাননা বোর্ড <span class="sbg">Top Contributors</span></h2></div>
+  <div class="tcg" id="tcg"></div>
+  <div class="seh"><h2>👤 সদস্যবৃন্দ <span class="sbg" id="mbg">17</span></h2><button class="bsm wadmin" onclick="openAddM()">+ যোগ করুন</button></div>
+  <div class="mg" id="mg1"></div>
+</div>
+
+<!-- MEMBERS -->
+<div class="sp" id="p-members">
+  <div class="ph"><div><h1>👥 সদস্য তালিকা</h1><p>সকল ১৭ জন সদস্য</p></div><button class="bpri wadmin" onclick="openAddM()">➕ নতুন সদস্য</button></div>
+  <div class="mg" id="mg2"></div>
+</div>
+
+<!-- DUES -->
+<div class="sp" id="p-dues">
+  <div class="ph"><div><h1>💰 চাঁদার হিসাব</h1><p>১২ মাসের রেকর্ড</p></div><button class="bsm" onclick="exportPDF()">📄 PDF</button></div>
+  <div class="tw"><table><thead><tr>
+    <th>সদস্য</th><th>জান</th><th>ফেব</th><th>মার</th><th>এপ্র</th><th>মে</th><th>জুন</th><th>জুল</th><th>আগ</th><th>সেপ</th><th>অক্ট</th><th>নভ</th><th>ডিস</th><th>মোট</th>
+  </tr></thead><tbody id="dtb"></tbody></table></div>
+</div>
+
+<!-- FINANCE -->
+<div class="sp" id="p-finance">
+  <div class="ph"><div><h1>📊 আর্থিক রিপোর্ট</h1><p>আয়-ব্যয়</p></div><button class="bpri wadmin" onclick="openExpM()">➕ লেনদেন</button></div>
+  <div class="cw">
+    <div class="seh" style="margin-bottom:0"><h2>📈 আয় vs খরচ</h2><div class="cleg"><div class="cli"><div class="cld" style="background:var(--ac)"></div>আয়</div><div class="cli"><div class="cld" style="background:var(--rd)"></div>খরচ</div></div></div>
+    <div class="cbs" id="cbs"></div>
+    <div style="display:flex;gap:4px;margin-top:4px" id="cbl"></div>
+  </div>
+  <div class="es"><div class="seh"><h2>📝 লেনদেনের ইতিহাস</h2></div><div id="elist"></div></div>
+</div>
+
+<!-- ATTENDANCE -->
+<div class="sp" id="p-attend">
+  <div class="ph"><div><h1>✅ উপস্থিতির রেকর্ড</h1></div><button class="bpri wadmin" onclick="showT('📅 মিটিং যোগ হয়েছে!')">+ মিটিং</button></div>
+  <div class="tw"><table><thead><tr><th>সদস্য</th><th>মিটিং ১</th><th>মিটিং ২</th><th>মিটিং ৩</th><th>পার্টি</th><th>মোট</th></tr></thead><tbody id="atb"></tbody></table></div>
+</div>
+
+<!-- CALENDAR -->
+<div class="sp" id="p-cal">
+  <div class="ph"><div><h1>📅 ইভেন্ট ক্যালেন্ডার</h1></div><button class="bpri wadmin" onclick="openEvM()">+ ইভেন্ট</button></div>
+  <div class="cals">
+    <div class="calh">
+      <button class="calnb" onclick="chMon(-1)">‹</button>
+      <div class="calt" id="calt"></div>
+      <button class="calnb" onclick="chMon(1)">›</button>
+    </div>
+    <div class="calgr" id="calgr"></div>
+    <div class="evl" id="evl"></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="sp" id="p-about">
+  <div class="ph"><div><h1>📖 সংগঠন পরিচিতি</h1></div></div>
+  <div style="background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:21px;">
+    <div class="abh"><div class="abl">GAN Z 2026</div><div class="abt">"নিজেদের মধ্যে একতা বজায় রাখা এবং একে অপরের বিপদে-আপদে নিঃস্বার্থভাবে পাশে দাঁড়ানো।"</div></div>
+    <div class="seh"><h2>📋 সংগঠনের নিয়মাবলী</h2></div>
+    <div class="rg" id="rgd"></div>
+  </div>
+</div>
+
+<!-- GALLERY -->
+<div class="sp" id="p-gallery">
+  <div class="ph"><div><h1>🖼️ গ্যালারি</h1></div><button class="bpri wadmin" onclick="showT('📸 ছবি আপলোড!')">📸 আপলোড</button></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px">
+    <div style="height:135px;background:linear-gradient(135deg,#00d4ff22,#b388ff22);border:1px solid var(--br);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:34px;cursor:pointer" onclick="showT('📸 ছবি আপলোড করুন!')">📷</div>
+    <div style="height:135px;background:linear-gradient(135deg,#00e67622,#00d4ff22);border:1px solid var(--br);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:34px">🎉</div>
+    <div style="height:135px;background:linear-gradient(135deg,#ffd74022,#ff980022);border:1px solid var(--br);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:34px">🤝</div>
+    <div style="height:135px;background:linear-gradient(135deg,#b388ff22,#7c4dff22);border:1px solid var(--br);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:34px">🌟</div>
+  </div>
+</div>
+
+<!-- ACTIVITY LOG -->
+<div class="sp" id="p-actlog">
+  <div class="ph"><div><h1>📋 অ্যাক্টিভিটি লগ</h1><p>কে কখন কী পরিবর্তন করেছেন</p></div><button class="bsm" onclick="actLog=[];renderAct();showT('🗑️ লগ পরিষ্কার!')">পরিষ্কার</button></div>
+  <div class="acts" id="actd"></div>
+</div>
+
+</main>
+
+<!-- ADD MEMBER MODAL -->
+<div class="mb" id="mAdd">
+  <div class="md">
+    <h3>✏️ <span id="mTitle">নতুন সদস্য</span></h3>
+    <div class="fr">
+      <div class="fg"><label>নাম</label><input type="text" id="iN" placeholder="সম্পূর্ণ নাম"></div>
+      <div class="fg"><label>পদবী</label><select id="iR"><option value="member">সাধারণ সদস্য</option><option value="bhai">বড় ভাই</option><option value="president">সভাপতি</option><option value="treasurer">কেশিয়ার</option><option value="organizer">অর্গানাইজার</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>মোবাইল</label><input type="text" id="iP" placeholder="01XXXXXXXXX"></div>
+      <div class="fg"><label>রক্তের গ্রুপ</label><select id="iB"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+    </div>
+    <div class="fg"><label>সাপ্তাহিক চাঁদা (৳)</label><input type="number" id="iA" value="20"></div>
+    <div class="ma"><button class="bcan" onclick="closeM('mAdd')">বাতিল</button><button class="bsav" onclick="saveMem()">✅ সংরক্ষণ</button></div>
+  </div>
+</div>
+
+<!-- EXPENSE MODAL -->
+<div class="mb" id="mExp">
+  <div class="md">
+    <h3>💸 লেনদেন যোগ</h3>
+    <div class="fg"><label>বিবরণ</label><input type="text" id="eD" placeholder="নাস্তার খরচ / চাঁদা..."></div>
+    <div class="fr">
+      <div class="fg"><label>পরিমাণ (৳)</label><input type="number" id="eA" placeholder="500"></div>
+      <div class="fg"><label>ধরন</label><select id="eT"><option value="expense">খরচ</option><option value="income">আয়</option></select></div>
+    </div>
+    <div class="fg"><label>তারিখ</label><input type="date" id="eDt"></div>
+    <div class="ma"><button class="bcan" onclick="closeM('mExp')">বাতিল</button><button class="bsav" onclick="saveExp()">✅ সংরক্ষণ</button></div>
+  </div>
+</div>
+
+<!-- EVENT MODAL -->
+<div class="mb" id="mEv">
+  <div class="md">
+    <h3>📅 ইভেন্ট যোগ</h3>
+    <div class="fg"><label>ইভেন্টের নাম</label><input type="text" id="evN" placeholder="মাসিক পার্টি"></div>
+    <div class="fr">
+      <div class="fg"><label>তারিখ</label><input type="date" id="evDt"></div>
+      <div class="fg"><label>ইমোজি</label><input type="text" id="evI" placeholder="🎉" maxlength="2"></div>
+    </div>
+    <div class="fg"><label>বিবরণ</label><input type="text" id="evDs" placeholder="সংক্ষিপ্ত বিবরণ"></div>
+    <div class="ma"><button class="bcan" onclick="closeM('mEv')">বাতিল</button><button class="bsav" onclick="saveEv()">✅ যোগ করুন</button></div>
+  </div>
+</div>
+
+<!-- RECEIPT MODAL -->
+<div class="mb" id="mRec">
+  <div class="md" style="max-width:350px;background:transparent;border:none;box-shadow:none;padding:0;">
+    <div class="recbox" id="recContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== CONFIG =====
+const AU='admin', AP='ganz2026';
+let isAdmin=false, isBn=true, editId=null;
+let calDate=new Date();
+const COLORS=['#00d4ff','#00e676','#ffd740','#b388ff','#ff7043','#26c6da','#66bb6a','#ffa726','#ab47bc','#ef5350','#29b6f6','#9ccc65','#ffca28','#ec407a','#8d6e63','#78909c','#42a5f5'];
+const MBN=['জানু','ফেব্রু','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টে','অক্টো','নভে','ডিসে'];
+const DBN=['রবি','সোম','মঙ্গ','বুধ','বৃহ','শুক্র','শনি'];
+const MFN=['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+const SMBN=['জান','ফেব','মার','এপ্র','মে','জুন','জুল','আগ','সেপ','অক্ট','নভ','ডিস'];
+
+let members=[
+  {id:1,name:'আহসান',phone:'01994876360',role:'bhai',blood:'O+',amount:20,dues:[1,1,1,1,1,0,0,0,0,0,0,0],att:[1,1,1,1]},
+  {id:2,name:'নাজমুল',phone:'01602588904',role:'president',blood:'B+',amount:20,dues:[1,1,1,1,0,0,0,0,0,0,0,0],att:[1,1,0,1]},
+  {id:3,name:'তুহিন',phone:'',role:'member',blood:'A+',amount:20,dues:[1,1,1,0,0,0,0,0,0,0,0,0],att:[1,0,1,1]},
+  {id:4,name:'জিহাদ',phone:'01955652331',role:'bhai',blood:'AB+',amount:20,dues:[1,1,1,1,1,1,0,0,0,0,0,0],att:[1,1,1,0]},
+  {id:5,name:'মাফিজুল্লা',phone:'01988437076',role:'member',blood:'O+',amount:20,dues:[1,1,0,0,0,0,0,0,0,0,0,0],att:[0,1,1,1]},
+  {id:6,name:'ইউনুছ',phone:'',role:'member',blood:'A-',amount:20,dues:[1,1,1,1,1,0,0,0,0,0,0,0],att:[1,1,0,0]},
+  {id:7,name:'রিফাত',phone:'01927619446',role:'organizer',blood:'B+',amount:20,dues:[1,1,1,1,0,0,0,0,0,0,0,0],att:[1,0,1,0]},
+  {id:8,name:'ফারুক',phone:'01403568639',role:'member',blood:'O-',amount:20,dues:[1,1,0,0,0,0,0,0,0,0,0,0],att:[0,1,0,1]},
+  {id:9,name:'রাফসান',phone:'01925496224',role:'member',blood:'A+',amount:20,dues:[1,1,1,1,1,0,0,0,0,0,0,0],att:[1,1,1,1]},
+  {id:10,name:'শরিফ',phone:'01991315949',role:'member',blood:'B-',amount:20,dues:[1,0,0,0,0,0,0,0,0,0,0,0],att:[1,0,0,1]},
+  {id:11,name:'আমানউল্লাহ',phone:'01604741713',role:'member',blood:'AB-',amount:20,dues:[1,1,1,0,0,0,0,0,0,0,0,0],att:[0,0,1,1]},
+  {id:12,name:'নাইদুল',phone:'',role:'member',blood:'O+',amount:20,dues:[1,1,0,0,0,0,0,0,0,0,0,0],att:[1,1,1,0]},
+  {id:13,name:'হাবিজুল্লাহ',phone:'',role:'member',blood:'A+',amount:20,dues:[1,1,1,1,0,0,0,0,0,0,0,0],att:[1,0,1,1]},
+  {id:14,name:'জিদান',phone:'',role:'member',blood:'B+',amount:20,dues:[1,0,0,0,0,0,0,0,0,0,0,0],att:[0,1,1,0]},
+  {id:15,name:'আব্দুল্লাহ',phone:'',role:'member',blood:'O+',amount:20,dues:[1,1,1,0,0,0,0,0,0,0,0,0],att:[1,1,0,1]},
+  {id:16,name:'মেহেদী',phone:'01751481122',role:'member',blood:'A-',amount:20,dues:[1,1,0,0,0,0,0,0,0,0,0,0],att:[1,0,1,1]},
+  {id:17,name:'শাওরি',phone:'',role:'member',blood:'B+',amount:20,dues:[1,0,0,0,0,0,0,0,0,0,0,0],att:[0,1,0,0]},
+];
+
+let expenses=[
+  {id:1,desc:'পার্টির নাস্তা',amount:800,type:'expense',date:'2026-04-17',icon:'🍕'},
+  {id:2,desc:'চাঁদা — জানুয়ারি',amount:340,type:'income',date:'2026-01-31',icon:'💰'},
+  {id:3,desc:'চাঁদা — ফেব্রুয়ারি',amount:300,type:'income',date:'2026-02-28',icon:'💰'},
+  {id:4,desc:'মিটিং চা-নাস্তা',amount:200,type:'expense',date:'2026-03-10',icon:'☕'},
+  {id:5,desc:'চাঁদা — মার্চ',amount:260,type:'income',date:'2026-03-31',icon:'💰'},
+];
+
+let events=[
+  {id:1,name:'মাসিক পার্টি',date:'2026-05-17',icon:'🎉',desc:'সকল সদস্যের উপস্থিতি বাধ্যতামূলক'},
+  {id:2,name:'মাসিক মিটিং',date:'2026-05-25',icon:'📋',desc:'চাঁদার হিসাব ও আলোচনা সভা'},
+  {id:3,name:'বার্ষিক অনুষ্ঠান',date:'2026-06-10',icon:'🌟',desc:'GAN Z 2026 বার্ষিক উৎসব'},
+];
+
+let actLog=[];
+
+const rules=[
+  {t:'নেতৃত্বের প্রতি আনুগত্য',d:'সংগঠনের প্রধান বা বড় ভাইয়ের সঠিক দিকনির্দেশনা মেনে চলতে হবে।'},
+  {t:'বড়দের প্রতি সম্মান',d:'সংগঠনের ভেতরে ও বাইরে সদস্যদের যথাযথ সম্মান দিতে হবে।'},
+  {t:'সাপ্তাহিক সঞ্চয়',d:'প্রতি সপ্তাহে নির্ধারিত ২০ টাকা নিয়মিত জমা দিতে হবে।'},
+  {t:'সভা ও উপস্থিতি',d:'জরুরি বা মাসিক মিটিংয়ে উপস্থিত থাকা বাধ্যতামূলক।'},
+  {t:'গোপনীয়তা রক্ষা',d:'সংগঠনের ভেতরের আলোচনা বাইরে বলা যাবে না।'},
+  {t:'গণতান্ত্রিক সিদ্ধান্ত',d:'যেকোনো বড় কাজে ৭০% সদস্যের সম্মতি থাকতে হবে।'},
+  {t:'অরাজনৈতিক অবস্থান',d:'সংগঠন কোনো রাজনীতির সাথে যুক্ত থাকবে না।'},
+  {t:'স্বেচ্ছাসেবী মনোভাব',d:'কাজের জন্য বেতন দাবি করা যাবে না।'},
+  {t:'টাকার সঠিক ব্যবহার',d:'প্রতিটি পয়সার হিসাব পরিষ্কার থাকতে হবে।'},
+  {t:'সামাজিক ব্যবহার',d:'বিনয় এবং ভদ্রতা হবে আমাদের পরিচয়।'},
+  {t:'ব্যক্তিগত ঋণ নিষিদ্ধ',d:'ফান্ড থেকে ব্যক্তিগত ঋণ নেওয়া যাবে না।'},
+  {t:'টাকা ফেরতযোগ্য নয়',d:'একবার জমা দেওয়া টাকা ফেরত নেওয়া যাবে না।'},
+];
+
+// AUTH
+function doLogin(){
+  const u=document.getElementById('lu').value.trim();
+  const p=document.getElementById('lp').value;
+  if(u===AU&&p===AP){
+    isAdmin=true;
+    document.getElementById('aLogin').classList.remove('show');
+    document.body.classList.add('is-admin');
+    document.getElementById('abadge').style.display='inline-flex';
+    document.getElementById('atag').style.display='inline-block';
+    addAct('🔐 অ্যাডমিন লগইন সম্পন্ন','var(--gr)');
+    showT('✅ অ্যাডমিন লগইন সফল!');
+    init();
+  } else {
+    const e=document.getElementById('lerr');
+    e.style.display='block';
+    setTimeout(()=>e.style.display='none',3000);
+  }
+}
+function viewOnly(){
+  isAdmin=false;
+  document.getElementById('aLogin').classList.remove('show');
+  addAct('👁️ View Only মোডে প্রবেশ','var(--tx2)');
+  showT('👁️ View Only মোডে প্রবেশ');
+  init();
+}
+function doLogout(){
+  isAdmin=false;
+  document.body.classList.remove('is-admin');
+  document.getElementById('abadge').style.display='none';
+  document.getElementById('atag').style.display='none';
+  document.getElementById('lu').value='';document.getElementById('lp').value='';
+  document.getElementById('aLogin').classList.add('show');
+  closeSB();showT('👋 লগআউট সম্পন্ন!');
+}
+
+// ACTIVITY
+function addAct(text,color='var(--ac)'){
+  const now=new Date();
+  const time=now.toLocaleString('bn-BD',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'short'});
+  actLog.unshift({text,color,time});
+  if(actLog.length>50)actLog.pop();
+}
+function renderAct(){
+  const el=document.getElementById('actd');
+  if(!el)return;
+  if(!actLog.length){el.innerHTML='<div style="text-align:center;padding:28px;color:var(--tx3)">কোনো অ্যাক্টিভিটি নেই</div>';return;}
+  el.innerHTML=actLog.map(a=>`<div class="acti"><div class="actd" style="background:${a.color}"></div><div><div class="actt">${a.text}</div><div class="actm">${a.time}</div></div></div>`).join('');
+}
+
+// ROLE
+function rl(r){const m={bhai:['বড় ভাই','rb'],president:['সভাপতি','rp'],treasurer:['কেশিয়ার','rt'],organizer:['অর্গানাইজার','ro'],member:['সদস্য','rm']};return m[r]||['সদস্য','rm'];}
+
+// STATS
+function updStats(){
+  const col=members.reduce((s,m)=>s+m.dues.filter(Boolean).length*m.amount,0);
+  const max=members.reduce((s,m)=>s+12*m.amount,0);
+  const due=max-col;
+  const expt=expenses.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
+  const bal=Math.max(0,col-expt);
+  document.getElementById('st').textContent=members.length;
+  document.getElementById('sc2').textContent='৳'+col;
+  document.getElementById('sd').textContent='৳'+due;
+  document.getElementById('sb2').textContent='৳'+bal;
+}
+
+// TOP CONTRIB
+function renderTC(){
+  const el=document.getElementById('tcg');if(!el)return;
+  const sorted=[...members].sort((a,b)=>b.dues.filter(Boolean).length-a.dues.filter(Boolean).length).slice(0,4);
+  const medals=['🥇','🥈','🥉','🏅'];
+  el.innerHTML=sorted.map((m,i)=>{
+    const paid=m.dues.filter(Boolean).length;
+    const pct=Math.round(paid/12*100);
+    const col=COLORS[members.indexOf(m)%COLORS.length];
+    return `<div class="tcc"><div class="tcr">${medals[i]}</div><div class="tca" style="background:${col}">${m.name.charAt(0)}</div><div class="tcn">${m.name}</div><div class="tcm">${paid}/12 মাস</div><div class="tcbar"><div class="tcbf" style="width:${pct}%"></div></div></div>`;
+  }).join('');
+}
+
+// RENDER MEMBERS
+function renderM(list,gid){
+  const g=document.getElementById(gid);if(!g)return;
+  g.innerHTML='';
+  list.forEach(m=>{
+    const idx=members.indexOf(m);
+    const [label,cls]=rl(m.role);
+    const col=COLORS[idx%COLORS.length];
+    const paid=m.dues.filter(Boolean).length;
+    const curPaid=m.dues[4]===1;
+    const editBtn=isAdmin?`<button class="medb" onclick="editM(${m.id})">✏️</button>`:'';
+    const waBtn=m.phone?`<button class="wab" onclick="openWA('${m.phone}','${m.name}')">📱 WhatsApp</button>`:'';
+    g.innerHTML+=`<div class="mc" data-id="${m.id}">
+      ${editBtn}
+      <div class="mav" style="background:${col};border-color:${col}33">
+        <span>${m.name.charAt(0)}</span>
+        <div class="mst ${curPaid?'sp2':'su'}"></div>
+      </div>
+      <div class="mn">${m.name}</div>
+      <span class="mr ${cls}">${label}</span>
+      <div class="mi">💉 ${m.blood||'?'}</div>
+      <div class="mi">📱 ${m.phone||'নম্বর নেই'}</div>
+      <div class="mi" style="margin-top:5px"><span style="color:${paid>0?'var(--gr)':'var(--rd)'};font-weight:700">${paid}</span>/12 মাস পরিশোধ</div>
+      <button class="rcb" onclick="showRec(${m.id})">🧾 রসিদ</button>
+      ${waBtn}
+    </div>`;
+  });
+  const b=document.getElementById('mbg');if(b)b.textContent=list.length;
+}
+
+// DUES TABLE
+function renderDues(){
+  const tb=document.getElementById('dtb');if(!tb)return;
+  tb.innerHTML='';
+  members.forEach((m,i)=>{
+    const [label]=rl(m.role);
+    const col=COLORS[i%COLORS.length];
+    const total=m.dues.filter(Boolean).length*m.amount;
+    const cells=m.dues.map((d,mi)=>{
+      const dis=!isAdmin?'disabled':'';
+      return `<td><button class="tk ${d?'paid':'unpaid'}" onclick="toggleDue(${m.id},${mi})" ${dis}>${d?'✓':'✗'}</button></td>`;
+    }).join('');
+    tb.innerHTML+=`<tr><td><div class="mcel"><div class="cav" style="background:${col}">${m.name.charAt(0)}</div><div><div class="cnm">${m.name}</div><div class="crl">${label}</div></div></div></td>${cells}<td class="ttl">৳${total}</td></tr>`;
+  });
+}
+
+// ATTENDANCE
+function renderAtt(){
+  const tb=document.getElementById('atb');if(!tb)return;
+  tb.innerHTML='';
+  members.forEach((m,i)=>{
+    const col=COLORS[i%COLORS.length];
+    const tot=m.att.filter(Boolean).length;
+    const cells=m.att.map(d=>`<td><span style="font-size:15px">${d?'✅':'❌'}</span></td>`).join('');
+    tb.innerHTML+=`<tr><td><div class="mcel"><div class="cav" style="background:${col}">${m.name.charAt(0)}</div><div class="cnm">${m.name}</div></div></td>${cells}<td><strong style="color:var(--ac)">${tot}/4</strong></td></tr>`;
+  });
+}
+
+// EXPENSES
+function renderExp(){
+  const el=document.getElementById('elist');if(!el)return;
+  el.innerHTML=expenses.map(e=>`<div class="ei"><div class="eic">${e.icon}</div><div class="einf"><div class="en">${e.desc}</div><div class="ed">${e.date}</div></div><span class="et ${e.type}">${e.type==='income'?'আয়':'খরচ'}</span><div class="ea" style="color:${e.type==='income'?'var(--gr)':'var(--rd)'}">${e.type==='income'?'+':'-'}৳${e.amount}</div></div>`).join('');
+}
+
+// CHART
+function renderChart(){
+  const bEl=document.getElementById('cbs');const lEl=document.getElementById('cbl');if(!bEl)return;
+  const inc=MBN.slice(0,6).map((_,mi)=>members.reduce((s,m)=>s+(m.dues[mi]?m.amount:0),0));
+  const exp=[0,0,200,0,0,0];
+  const mx=Math.max(...inc,...exp,1);
+  bEl.innerHTML=MBN.slice(0,6).map((mn,i)=>{
+    const ih=Math.round(inc[i]/mx*100);const eh=Math.round(exp[i]/mx*100);
+    return `<div class="cbw"><div class="bg"><div class="cb inc" style="height:${ih}%;flex:1"></div>${eh>0?`<div class="cb exb" style="height:${eh}%;flex:1"></div>`:''}</div></div>`;
+  }).join('');
+  lEl.innerHTML=MBN.slice(0,6).map(mn=>`<div class="cl" style="flex:1">${mn}</div>`).join('');
+}
+
+// CALENDAR
+function renderCal(){
+  const yr=calDate.getFullYear(),mo=calDate.getMonth();
+  document.getElementById('calt').textContent=`${MFN[mo]} ${yr}`;
+  const first=new Date(yr,mo,1).getDay();
+  const days=new Date(yr,mo+1,0).getDate();
+  const today=new Date();
+  const evDates=new Set(events.filter(e=>{const d=new Date(e.date);return d.getMonth()===mo&&d.getFullYear()===yr;}).map(e=>new Date(e.date).getDate()));
+  let h=DBN.map(d=>`<div class="caldl">${d}</div>`).join('');
+  for(let i=0;i<first;i++)h+=`<div class="cald empty"></div>`;
+  for(let d=1;d<=days;d++){
+    const isTod=d===today.getDate()&&mo===today.getMonth()&&yr===today.getFullYear();
+    const hasEv=evDates.has(d);
+    h+=`<div class="cald ${isTod?'today':''} ${hasEv?'has-ev':''}" onclick="calClick(${d},${mo},${yr})">${d}</div>`;
+  }
+  document.getElementById('calgr').innerHTML=h;
+  const filt=events.filter(e=>{const d=new Date(e.date);return d.getMonth()===mo&&d.getFullYear()===yr;}).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const el=document.getElementById('evl');
+  el.innerHTML=filt.length?filt.map(ev=>{const d=new Date(ev.date);return `<div class="evi"><div class="evdb">${d.getDate()}<span>${SMBN[d.getMonth()]}</span></div><div class="evif"><h4>${ev.icon} ${ev.name}</h4><p>${ev.desc}</p></div></div>`}).join(''):'<div style="text-align:center;padding:18px;color:var(--tx3)">এই মাসে কোনো ইভেন্ট নেই</div>';
+}
+function chMon(d){calDate.setMonth(calDate.getMonth()+d);renderCal();}
+function calClick(d,m,y){const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const ev=events.find(e=>e.date===ds);if(ev)showT(`📅 ${ev.icon} ${ev.name}`);}
+
+// RECEIPT
+function showRec(id){
+  const m=members.find(x=>x.id===id);if(!m)return;
+  const paid=m.dues.filter(Boolean).length;
+  const tot=paid*m.amount;
+  const now=new Date().toLocaleDateString('bn-BD');
+  document.getElementById('recContent').innerHTML=`
+    <div class="rech"><div class="recl">GAN Z 2026</div><div class="rect">ডিজিটাল চাঁদার রসিদ</div></div>
+    <div class="recamt"><div class="am">৳${tot}</div><div class="lm">মোট পরিশোধিত চাঁদা</div></div>
+    <div class="recrow"><span class="reclbl">সদস্যের নাম</span><span class="recval">${m.name}</span></div>
+    <div class="recrow"><span class="reclbl">পদবী</span><span class="recval">${rl(m.role)[0]}</span></div>
+    <div class="recrow"><span class="reclbl">রক্তের গ্রুপ</span><span class="recval">${m.blood}</span></div>
+    <div class="recrow"><span class="reclbl">পরিশোধিত মাস</span><span class="recval">${paid}/12</span></div>
+    <div class="recrow"><span class="reclbl">প্রতি সপ্তাহ</span><span class="recval">৳${m.amount}</span></div>
+    <div class="recrow"><span class="reclbl">তারিখ</span><span class="recval">${now}</span></div>
+    <div class="recft">GAN Z 2026 — একতাই আমাদের শক্তি<br>এটি সংগঠনের অফিসিয়াল নথি।</div>
+    <button class="recpbtn" onclick="window.print()">🖨️ প্রিন্ট / ডাউনলোড</button>
+    <button class="bcan" style="width:100%;margin-top:7px" onclick="closeM('mRec')">বন্ধ করুন</button>
+  `;
+  document.getElementById('mRec').classList.add('open');
+}
+
+// RULES
+function renderRules(){
+  const el=document.getElementById('rgd');if(!el)return;
+  el.innerHTML=rules.map((r,i)=>`<div class="rc"><div class="rn">${i+1}</div><div><div class="rti">${r.t}</div><div class="rdc">${r.d}</div></div></div>`).join('');
+}
+
+// INTERACTIONS
+function toggleDue(id,mi){
+  if(!isAdmin){showT('🔐 শুধু অ্যাডমিন পরিবর্তন করতে পারবেন!');return;}
+  const m=members.find(x=>x.id===id);if(!m)return;
+  m.dues[mi]=m.dues[mi]?0:1;
+  addAct(`<strong>${m.name}</strong> — ${MBN[mi]} মাস ${m.dues[mi]?'পরিশোধ':'অপরিশোধ'} চিহ্নিত`,'var(--ac)');
+  renderAll();showT(m.dues[mi]?'✅ পরিশোধ চিহ্নিত':'❌ অপরিশোধ চিহ্নিত');
+}
+
+function searchM(q){
+  const fl=members.filter(m=>m.name.includes(q)||m.phone.includes(q));
+  renderM(fl,'mg1');renderM(fl,'mg2');
+}
+
+function openWA(phone,name){
+  const clean=phone.replace(/\D/g,'');
+  const bd=clean.startsWith('0')?'88'+clean:clean;
+  const msg=encodeURIComponent(`আস-সালামু আলাইকুম ${name} ভাই,\nGAN Z 2026 সংগঠনের চাঁদা এখনো বাকি আছে। দয়া করে জমা দিন। 🙏\n— GAN Z 2026`);
+  window.open(`https://wa.me/${bd}?text=${msg}`,'_blank');
+}
+
+// MODALS
+function openAddM(){if(!isAdmin){showT('🔐 অ্যাডমিন লগইন করুন!');return;}editId=null;document.getElementById('iN').value='';document.getElementById('iP').value='';document.getElementById('iA').value='20';document.getElementById('mTitle').textContent='নতুন সদস্য';document.getElementById('mAdd').classList.add('open');}
+function editM(id){if(!isAdmin){showT('🔐 অ্যাডমিন!');return;}const m=members.find(x=>x.id===id);if(!m)return;editId=id;document.getElementById('iN').value=m.name;document.getElementById('iR').value=m.role;document.getElementById('iP').value=m.phone;document.getElementById('iB').value=m.blood;document.getElementById('iA').value=m.amount;document.getElementById('mTitle').textContent='সদস্যের তথ্য সম্পাদনা';document.getElementById('mAdd').classList.add('open');}
+function saveMem(){const name=document.getElementById('iN').value.trim();if(!name){showT('⚠️ নাম লিখুন!');return;}if(editId){const m=members.find(x=>x.id===editId);const old=m.name;Object.assign(m,{name,role:document.getElementById('iR').value,phone:document.getElementById('iP').value,blood:document.getElementById('iB').value,amount:+document.getElementById('iA').value||20});addAct(`<strong>${old}</strong> — তথ্য আপডেট`,'var(--gd)');showT('✅ তথ্য আপডেট!');}else{members.push({id:Date.now(),name,role:document.getElementById('iR').value,phone:document.getElementById('iP').value,blood:document.getElementById('iB').value,amount:+document.getElementById('iA').value||20,dues:Array(12).fill(0),att:[0,0,0,0]});addAct(`<strong>${name}</strong> — নতুন সদস্য যোগ`,'var(--gr)');showT('✅ নতুন সদস্য যোগ!');}closeM('mAdd');renderAll();}
+function openExpM(){if(!isAdmin){showT('🔐 অ্যাডমিন!');return;}document.getElementById('eDt').value=new Date().toISOString().split('T')[0];document.getElementById('mExp').classList.add('open');}
+function saveExp(){const desc=document.getElementById('eD').value.trim();const amt=+document.getElementById('eA').value;if(!desc||!amt){showT('⚠️ সব তথ্য দিন!');return;}const type=document.getElementById('eT').value;expenses.unshift({id:Date.now(),desc,amount:amt,type,date:document.getElementById('eDt').value,icon:type==='income'?'💰':'💸'});addAct(`<strong>${desc}</strong> — ৳${amt} ${type==='income'?'আয়':'খরচ'}`,type==='income'?'var(--gr)':'var(--rd)');closeM('mExp');renderExp();updStats();renderChart();showT('✅ লেনদেন যোগ!');}
+function openEvM(){if(!isAdmin){showT('🔐 অ্যাডমিন!');return;}document.getElementById('evDt').value=new Date().toISOString().split('T')[0];document.getElementById('evI').value='🎉';document.getElementById('mEv').classList.add('open');}
+function saveEv(){const name=document.getElementById('evN').value.trim();if(!name){showT('⚠️ নাম দিন!');return;}events.push({id:Date.now(),name,date:document.getElementById('evDt').value,icon:document.getElementById('evI').value||'📅',desc:document.getElementById('evDs').value||''});addAct(`<strong>${name}</strong> — ইভেন্ট যোগ`,'var(--gd)');closeM('mEv');renderCal();showT('✅ ইভেন্ট যোগ!');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+
+// SIDEBAR/THEME/PAGE
+function toggleSB(){document.getElementById('sb').classList.toggle('open');document.getElementById('ov').classList.toggle('open');}
+function closeSB(){document.getElementById('sb').classList.remove('open');document.getElementById('ov').classList.remove('open');}
+function setTh(t){let a=t==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):t;document.documentElement.setAttribute('data-theme',a);document.querySelectorAll('.thb').forEach(b=>b.classList.remove('active'));document.getElementById('t-'+t).classList.add('active');localStorage.setItem('th',t);}
+function showP(p,el){document.querySelectorAll('.sp').forEach(x=>x.classList.remove('active'));document.getElementById('p-'+p).classList.add('active');document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));if(el)el.classList.add('active');closeSB();if(p==='dues')renderDues();if(p==='finance'){renderExp();renderChart();}if(p==='attend')renderAtt();if(p==='about')renderRules();if(p==='members')renderM(members,'mg2');if(p==='cal')renderCal();if(p==='actlog')renderAct();}
+function toggleL(){isBn=!isBn;document.getElementById('langb').textContent=isBn?'EN':'বাং';showT(isBn?'🇧🇩 বাংলায় পরিবর্তিত!':'🇬🇧 Switched to English!');}
+function exportPDF(){showT('📄 PDF তৈরি হচ্ছে...');setTimeout(()=>window.print(),600);}
+
+// TOAST
+function showT(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+
+// RENDER ALL
+function renderAll(){renderM(members,'mg1');renderM(members,'mg2');updStats();renderTC();}
+
+// INIT
+function init(){const th=localStorage.getItem('th')||'dark';setTh(th);renderAll();renderCal();['mAdd','mExp','mEv','mRec'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('click',function(e){if(e.target===this)closeM(id);});});}
+
+// LOADER
+window.addEventListener('load',()=>{
+  setTimeout(()=>{const l=document.getElementById('loader');l.style.opacity='0';l.style.transition='opacity .5s';setTimeout(()=>l.style.display='none',500);},2200);
+  setTh(localStorage.getItem('th')||'dark');
+});
+</script>
+</body>
+</html>
